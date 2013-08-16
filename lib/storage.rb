@@ -1,3 +1,4 @@
+require 'rubygems'
 require 'aws-sdk'
 require 'storage/filesystem_store.rb'
 require 'storage/s3_store.rb'
