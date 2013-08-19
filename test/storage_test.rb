@@ -150,9 +150,11 @@ class StorageTest < Test::Unit::TestCase
 
       store.upload_dir("x/y/z", "tmp/file_column_test")
       url = URI.parse(store.url_for("x/y/z/a.jpg"))
+
       assert url.path.include?("/foo/x/y/z/a.jpg")
       assert url.query.include?("Signature")
       assert url.query.include?("Expires")
+      assert url.query.include?("response-content-type=image%2Fjpeg")
     end
 
     def test_sets_content_type_on_uploaded_files

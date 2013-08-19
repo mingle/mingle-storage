@@ -150,7 +150,9 @@ module Storage
     end
 
     def url_for(path)
-      object(path).url_for(:read, :expires => @url_expires).to_s
+      object(path).url_for(:read,
+                           :expires => @url_expires,
+                           :response_content_type => derive_content_type(path)).to_s
     end
 
     #todo: this should be interface that retrive a lazy file object
