@@ -92,7 +92,12 @@ module Storage
       "asx" => "video/x-ms-asf",
       "asf" => "video/x-ms-asf",
       "wmv" => "video/x-ms-wmv",
-      "avi" => "video/x-msvideo"
+      "avi" => "video/x-msvideo",
+      "docx" => "application/x-word",
+      "xlsx" => "application/x-excel",
+      "pptx" => "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+      "eml" => "text/plain",
+      "msg" => "text/plain"
     }
 
 
