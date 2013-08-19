@@ -158,7 +158,7 @@ module Storage
     end
 
     def clear
-      if s3_path.blank?
+      if s3_path.nil? || s3_path.empty?
         bucket.clear
       else
         bucket.objects.with_prefix(s3_path).delete_all
