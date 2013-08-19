@@ -13,5 +13,4 @@ Gem::Specification.new do |s|
   s.license     = "MIT"
 
   s.add_dependency "aws-sdk", "~>1.11.3"
-  s.add_dependency "activesupport", "~>2.3.8"
 end

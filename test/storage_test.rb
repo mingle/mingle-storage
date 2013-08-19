@@ -3,7 +3,6 @@ require 'storage'
 require 'fileutils'
 require 'tmpdir'
 require 'rubygems'
-require 'active_support'
 
 class StorageTest < Test::Unit::TestCase
   extend Test::Unit::Assertions
@@ -55,9 +54,6 @@ class StorageTest < Test::Unit::TestCase
 
 
   STORE_BUILD_OPTS.each do |store_type, build_opts|
-    store_test "test_build_right_store", store_type, build_opts do |store|
-      assert store.class.name.include?(ActiveSupport::Inflector.camelize(store_type))
-    end
 
     store_test "test_upload_local_file", store_type, build_opts do |store|
       store.upload("x/y/z", create_local_file("#{tmp_dir}/file_column_test/abc", "123"))

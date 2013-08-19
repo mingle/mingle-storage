@@ -109,7 +109,10 @@ module Storage
     private
 
     def store_class
-      ActiveSupport::Inflector.constantize("Storage::#{ActiveSupport::Inflector.camelize(@type)}Store")
+      {
+        :filesystem => Storage::FilesystemStore,
+        :s3 => Storage::S3Store
+      }[@type.to_sym]
     end
   end
 
