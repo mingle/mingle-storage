@@ -193,5 +193,26 @@ class StorageTest < Test::Unit::TestCase
       assert_equal "foo/#{file1}", keys.first
       assert_equal "foo/#{file2}", keys.last
     end
+
+    def test_use_s3_bucket_storage_with_namespace
+      namespaced_store = Storage.store(:s3, "foo", S3_CONFIG.merge(:namespace => 'app_namespace'))
+      local_file = self.class.create_local_file("/tmp/file_column_test/a.jpg")
+      namespaced_store.upload("x/y/z", local_file)
+
+      url = URI.parse(namespaced_store.url_for("x/y/z/a.jpg"))
+      assert url.path.include?("/app_namespace/foo/x/y/z/a.jpg")
+    end
+
+    def test_use_s3_storage_namespace_can_be_a_lazy_evaluate_block
+      ever_changing_app_namespace = 'foo'
+      namespaced_store = Storage.store(:s3, "foo", S3_CONFIG.merge(:namespace => proc { ever_changing_app_namespace }))
+      ever_changing_app_namespace = 'bar'
+
+      local_file = self.class.create_local_file("/tmp/file_column_test/a.jpg")
+      namespaced_store.upload("x/y/z", local_file)
+
+      url = URI.parse(namespaced_store.url_for("x/y/z/a.jpg"))
+      assert url.path.include?("/bar/foo/x/y/z/a.jpg")
+    end
   end
 end

@@ -105,6 +105,7 @@ module Storage
       @path_prefix = path_prefix
       @url_expires = options[:url_expires] || HALF_AN_HOUR
       @bucket_name = options[:bucket_name]
+      @namespace = options[:namespace]
     end
 
     def upload(path, local_file)
@@ -189,9 +190,13 @@ module Storage
     def object(path)
       bucket.objects[s3_path(path)]
     end
+    
+    def namespace
+      Proc === @namespace ? @namespace.call : @namespace
+    end
 
     def s3_path(*paths)
-      File.join(*([@path_prefix, *paths].compact))
+      File.join(*([namespace, @path_prefix, *paths].compact))
     end
 
     def bucket
