@@ -2,8 +2,8 @@ description = "Mingle storage API to support filesystem and AWS S3 backed storag
 
 Gem::Specification.new do |s|
   s.name        = "mingle-storage"
-  s.version     = "0.0.6"
-  s.date        = "2013-08-16"
+  s.version     = "0.0.7"
+  s.date        = "2014-03-04"
   s.summary     = description
   s.description = description
   s.authors     = ["ThoughtWorks Studios"]
