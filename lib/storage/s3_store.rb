@@ -112,7 +112,7 @@ module Storage
       local_file_name = File.basename(local_file)
       bucket.objects.create(
                             s3_path(path, local_file_name),
-                            File.read(local_file),
+                            Pathname.new(local_file),
                             { :content_type => derive_content_type(local_file_name) }
                             )
     end
