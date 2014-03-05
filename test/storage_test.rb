@@ -3,6 +3,7 @@ require 'storage'
 require 'fileutils'
 require 'tmpdir'
 require 'rubygems'
+require 'cgi'
 
 class StorageTest < Test::Unit::TestCase
   extend Test::Unit::Assertions
@@ -152,9 +153,25 @@ class StorageTest < Test::Unit::TestCase
       url = URI.parse(store.url_for("x/y/z/a.jpg"))
 
       assert url.path.include?("/foo/x/y/z/a.jpg")
-      assert url.query.include?("Signature")
-      assert url.query.include?("Expires")
-      assert url.query.include?("response-content-type=image%2Fjpeg")
+
+      querys = CGI.parse(url.query)
+      assert querys["Signature"]
+
+      half_hour_later = (Time.now + 30 * 60).to_i
+      assert querys["Expires"][0].to_i >= half_hour_later
+      assert querys["Expires"][0].to_i < half_hour_later + 5
+      assert_equal ["image/jpeg"], querys["response-content-type"]
+    end
+
+    def test_expiration_of_singed_url_can_be_overriden
+      self.class.create_local_file("#{tmp_dir}/file_column_test/a.jpg")
+      store.upload_dir("x/y/z", "tmp/file_column_test")
+      one_day = 24 * 60 * 60
+      one_day_later = (Time.now + one_day).to_i
+      url = URI.parse(store.url_for("x/y/z/a.jpg", :expires_in => one_day))
+      querys = CGI.parse(url.query)
+      assert querys["Expires"][0].to_i >= one_day_later
+      assert querys["Expires"][0].to_i < one_day_later + 5
     end
 
     def test_sets_content_type_on_uploaded_files

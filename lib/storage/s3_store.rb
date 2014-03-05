@@ -150,9 +150,9 @@ module Storage
       object(path).exists?
     end
 
-    def url_for(path)
+    def url_for(path, opts={})
       object(path).url_for(:read,
-                           :expires => @url_expires,
+                           :expires => opts[:expires_in] || @url_expires,
                            :response_content_type => derive_content_type(path)).to_s
     end
 
@@ -190,7 +190,7 @@ module Storage
     def object(path)
       bucket.objects[s3_path(path)]
     end
-    
+
     def namespace
       Proc === @namespace ? @namespace.call : @namespace
     end
