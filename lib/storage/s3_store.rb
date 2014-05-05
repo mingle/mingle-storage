@@ -108,12 +108,12 @@ module Storage
       @namespace = options[:namespace]
     end
 
-    def upload(path, local_file)
+    def upload(path, local_file, options={})
       local_file_name = File.basename(local_file)
       bucket.objects.create(
                             s3_path(path, local_file_name),
                             Pathname.new(local_file),
-                            { :content_type => derive_content_type(local_file_name) }
+                            { :content_type => derive_content_type(local_file_name) }.merge(options)
                             )
     end
 
@@ -138,8 +138,8 @@ module Storage
       end
     end
 
-    def write_to_file(path, content)
-      object(path).write(content)
+    def write_to_file(path, content, options={})
+      object(path).write(content, options)
     end
 
     def read(path)

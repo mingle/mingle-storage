@@ -9,7 +9,7 @@ class StorageTest < Test::Unit::TestCase
   extend Test::Unit::Assertions
 
   ROOT_DIR = File.dirname(__FILE__)+"/public/entry"
-  S3_CONFIG = {:bucket_name => ENV["S3_BUCKET_NAME"]}
+  S3_CONFIG = {:bucket_name => ENV.fetch("S3_BUCKET_NAME")}
   STORE_BUILD_OPTS = [
                       [:filesystem, {:root_path => ROOT_DIR }],
                       [:s3, S3_CONFIG]
