@@ -156,6 +156,10 @@ module Storage
                            :response_content_type => derive_content_type(path)).to_s
     end
 
+    def public_url(path, opts={})
+      object(path).public_url(opts)
+    end
+
     #todo: this should be interface that retrive a lazy file object
     def absolute_path(*relative_paths)
       File.join("s3:#{bucket_name}://", *relative_paths)
