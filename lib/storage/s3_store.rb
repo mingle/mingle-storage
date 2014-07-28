@@ -157,7 +157,7 @@ module Storage
     end
 
     def public_url(path, opts={})
-      object(path).public_url(opts)
+      object(path).public_url(opts).to_s
     end
 
     #todo: this should be interface that retrive a lazy file object
