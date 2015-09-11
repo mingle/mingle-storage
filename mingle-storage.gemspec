@@ -2,7 +2,7 @@ description = "Mingle storage API to support filesystem and AWS S3 backed storag
 
 Gem::Specification.new do |s|
   s.name        = "mingle-storage"
-  s.version     = "0.0.12"
+  s.version     = "0.0.13"
   s.date        = "2015-01-26"
   s.summary     = description
   s.description = description
@@ -12,5 +12,5 @@ Gem::Specification.new do |s|
   s.homepage    = "http://www.thoughtworks.com/products"
   s.license     = "MIT"
 
-  s.add_dependency "aws-sdk"
+  s.add_dependency "aws-sdk-v1"
 end

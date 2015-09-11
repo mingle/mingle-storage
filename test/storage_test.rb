@@ -5,6 +5,8 @@ require 'tmpdir'
 require 'rubygems'
 require 'cgi'
 
+OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
+
 class StorageTest < Test::Unit::TestCase
   extend Test::Unit::Assertions
 

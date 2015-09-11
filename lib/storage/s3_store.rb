@@ -166,9 +166,11 @@ module Storage
     end
 
     def url_for(path, opts={})
-      object(path).url_for(:read,
-                           :expires => opts[:expires_in] || @url_expires,
-                           :response_content_type => derive_content_type(path)).to_s
+      url_opts = {
+        :expires => opts.delete(:expires_in) || @url_expires,
+        :response_content_type => derive_content_type(path)
+      }.merge(opts)
+      object(path).url_for(:read, url_opts).to_s
     end
 
     def public_url(path, opts={})
