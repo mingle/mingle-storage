@@ -125,52 +125,51 @@ module Storage
 
     def upload(path, local_file, options={})
       local_file_name = File.basename(local_file)
-      bucket.objects.create(
-                            s3_path(path, local_file_name),
-                            Pathname.new(local_file),
-                            { :content_type => derive_content_type(local_file_name) }.merge(options)
-                            )
+      object  = bucket.object(s3_path(path, local_file_name))
+      object.upload_file(Pathname.new(local_file), { :content_type => derive_content_type(local_file_name) }.merge(options))
     end
 
     def upload_dir(path, local_dir)
-      bucket.objects.with_prefix(s3_path(path)).delete_all
+      bucket.objects(prefix: s3_path(path)).batch_delete!
       Dir[File.join(local_dir, "*")].each do |f|
         upload(path, f)
       end
     end
 
     def content_type(path)
-      object(path).content_type
+      object(path).get.content_type
     end
 
     def copy(path, to_local_path)
-      obj = object(path)
-      raise "File(#{path}) does not exist in the bucket #{bucket.name}" unless obj.exists?
+      obj_content = read(path)
+      raise "File(#{path}) does not exist in the bucket #{bucket.name}" if obj_content.nil?
       File.open(to_local_path, 'w') do |f|
-        obj.read do |c|
-          f.write(c)
-        end
+        f.write(obj_content)
       end
     end
 
     def write_to_file(path, content, options={})
-      object(path).write(content, options)
+      object  = bucket.object(s3_path(path))
+      object.put({body: content}.merge(options))
     end
 
     def read(path)
-      object(path).read
+      object = object(path)
+      return object.get.body.read unless object.nil?
+      object
     end
 
     def exists?(path)
-      object(path).exists?
+      !object(path).nil?
     end
 
-    def url_for(path, opts={})
+    def url_for(path, opts = {})
       url_opts = {
-        :expires => opts.delete(:expires_in) || @url_expires,
-        :response_content_type => derive_content_type(path)
+          :expires_in => opts.delete(:expires_in) || @url_expires,
+          :response_content_type => derive_content_type(path)
       }.merge(opts)
-      object(path).url_for(:read, url_opts).to_s
+      _object = object(path)
+      _object.nil? ? '' :  _object.presigned_url(:get, url_opts)
     end
 
     def public_url(path, opts={})
@@ -183,19 +182,19 @@ module Storage
     end
 
     def delete(path)
-      bucket.objects.with_prefix(s3_path(path)).delete_all
+      bucket.objects(prefix: s3_path(path)).batch_delete!
     end
 
     def clear
       if s3_path.nil? || s3_path.empty?
         bucket.clear
       else
-        bucket.objects.with_prefix(s3_path).delete_all
+        bucket.objects(prefix: s3_path).batch_delete!
       end
     end
 
     def objects(path)
-      bucket.objects.with_prefix(s3_path(path))
+      bucket.objects(prefix: s3_path(path))
     end
 
     private
@@ -205,11 +204,11 @@ module Storage
     end
 
     def s3
-      AWS::S3.new
+      Aws::S3::Resource.new
     end
 
     def object(path)
-      bucket.objects[s3_path(path)]
+      bucket.objects.find { |object| object.key == s3_path(path) }
     end
 
     def namespace
@@ -221,7 +220,7 @@ module Storage
     end
 
     def bucket
-      @bucket ||= s3.buckets[bucket_name]
+      @bucket ||= s3.bucket(bucket_name)
     end
 
     def bucket_name
